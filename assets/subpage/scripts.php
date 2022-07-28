@@ -60,7 +60,7 @@ $(document).ready(function() {
     $("#datatable").DataTable();
 
     var a = $("#datatable-buttons").DataTable({
-        lengthChange: !1,
+      ordering:false,
         buttons: ["copy", "excel", "pdf"]
     });
 

@@ -39,14 +39,27 @@
     
     
                                             <tbody>
-                                            <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td>0 Bottle (btl)</td>
-                                                <td><span class="badge bg-success">AVAILABLE</span></td>
-                                                <td><span class="badge bg-success">AVAILABLE</span></td>
-                                                <td><span class="badge bg-success">AVAILABLE</span></td>
-                                                <td><span class="badge bg-success">AVAILABLE</span></td>
-                                            </tr>
+                                            <?php 
+                                                    $sql = "SELECT table_transaction.ID,table_transaction.Transaction_Number,table_tables.Table_Name,table_transaction.DateTime_Out
+                                                    ,table_mop.MOP,table_transaction.Total_Amount_Due,table_account.Name from table_transaction
+                                                    inner join table_tables on
+                                                                table_transaction.Table_ID = table_tables.ID                           
+                                                                inner join table_mop on
+                                                                table_mop.ID = table_transaction.MOP                            
+                                                                inner join table_account on
+                                                                table_account.ID = table_transaction.Cashier  where table_transaction.Status = 'Paid' order by table_transaction.Transaction_Number DESC";
+                                                    $result = $conn->query($sql);
+                                                    while($row = $result->fetch_assoc()) { ?>
+                                                    <tr>
+                                                        <td><?php echo  htmlentities($row["Transaction_Number"]); ?></td>
+                                                        <td><?php echo  htmlentities($row["Table_Name"]); ?></td>
+                                                        <td><?php echo htmlentities(date_format(date_create($row["DateTime_Out"]),"F d, Y h:i a"));?></td>
+                                                        <td><?php echo  htmlentities($row["MOP"]); ?></td>
+                                                        <td>₱ <?php echo  htmlentities($row["Total_Amount_Due"]); ?></td>
+                                                        <td><?php echo  htmlentities($row["Name"]); ?></td>
+                                                    </tr>
+                                                    <?php
+                                                        } $conn->close();?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -68,7 +81,7 @@ $(document).ready(function() {
     $("#datatable").DataTable();
 
     var a = $("#datatable-buttons").DataTable({
-        lengthChange: !1,
+        ordering:false,
         buttons: ["copy", "excel", "pdf"]
     });
 
