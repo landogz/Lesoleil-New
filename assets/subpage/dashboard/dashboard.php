@@ -2,7 +2,7 @@
 
    require_once('../../../connections/database.php');
 
-   $getmonth = date("m");
+
    $sql_pros = "SELECT SUM(Total_Amount_Due) AS `Today`
                 FROM table_transaction 
                 WHERE DATE(DateTime_Out) = CURDATE()";
@@ -16,6 +16,7 @@
                   }else{
                       $total_day =0;
                   }
+
 
 $sql_pros = "SELECT SUM(Total_Amount_Due) AS `Month`
             FROM table_transaction
@@ -174,60 +175,26 @@ WHERE YEAR(DateTime_Out) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))";
     
                                         <h4 class="header-title mt-0 mb-3">Top Selling Items <span class="badge bg-info">THIS MONTH</span></h4>
                                         <div class="row">
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                          <div class="col-md-2 col-xl-2">
-                                              <div class="card">
-                                                  <img class="card-img-top img-fluid" src="assets/images/gallery/1.jpg" alt="Card image cap">
-                                                  <div class="card-body">
-                                                      <h4 class="card-title">San Mig Light</h4>
-                                                      <h2 class="fw-normal text-success" data-plugin="counterup">452</h2>
-                                                  </div>
-                                              </div>
-                                          </div>
+
+                                        <?php  $sql = "SELECT Product,Image,count(*) as `Count`,DateTime_Out
+                                                  FROM table_products
+                                                  INNER JOIN table_order
+                                                  ON table_products.ID = table_order.Product_ID
+                                                  INNER JOIN table_transaction
+                                                  ON table_order.Transaction_ID = table_transaction.ID WHERE MONTH(DateTime_Out) = MONTH(CURRENT_DATE())
+                                                  AND YEAR(DateTime_Out) = YEAR(CURRENT_DATE()) GROUP BY Product order by Count DESC LIMIT 6";
+                                                  $result = $conn->query($sql);
+                                                  while($row = $result->fetch_assoc()) { ?>
+                                                    <div class="col-md-2 col-xl-2">
+                                                        <div class="card">
+                                                            <img class="card-img-top img-fluid" src="photos/<?php echo $row["Image"]; ?>" alt="Card image cap" height="93" width="163">
+                                                            <div class="card-body">
+                                                                <h4 class="card-title"><?php echo $row["Product"]; ?></h4>
+                                                                <h2 class="fw-normal text-success" data-plugin="counterup"><?php echo $row["Count"]; ?></h2>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            <?php } ?>
                                          </div>
 
 
@@ -260,48 +227,27 @@ WHERE YEAR(DateTime_Out) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))";
                                                 </tr>
                                                 </thead>
                                                 <tbody>
+                                                <?php 
+                                                    $sql = "SELECT table_transaction.ID,table_transaction.Transaction_Number,table_tables.Table_Name,table_transaction.DateTime_Out
+                                                    ,table_mop.MOP,table_transaction.Total_Amount_Due,table_account.Name from table_transaction
+                                                    inner join table_tables on
+                                                                table_transaction.Table_ID = table_tables.ID                           
+                                                                inner join table_mop on
+                                                                table_mop.ID = table_transaction.MOP                            
+                                                                inner join table_account on
+                                                                table_account.ID = table_transaction.Cashier  where table_transaction.Status = 'Paid' order by table_transaction.Transaction_Number DESC LIMIT 10";
+                                                    $result = $conn->query($sql);
+                                                    while($row = $result->fetch_assoc()) { ?>
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>Adminto Admin v1</td>
-                                                        <td>01/01/2017</td>
-                                                        <td>26/04/2017</td>
-                                                        <td><span class="badge bg-danger">Released</span></td>
-                                                        <td>Coderthemes</td>
+                                                        <td><?php echo  htmlentities($row["Transaction_Number"]); ?></td>
+                                                        <td><?php echo  htmlentities($row["Table_Name"]); ?></td>
+                                                        <td><?php echo htmlentities(date_format(date_create($row["DateTime_Out"]),"F d, Y h:i a"));?></td>
+                                                        <td><?php echo  htmlentities($row["MOP"]); ?></td>
+                                                        <td>₱ <?php echo  htmlentities($row["Total_Amount_Due"]); ?></td>
+                                                        <td><?php echo  htmlentities($row["Name"]); ?></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Adminto Frontend v1</td>
-                                                        <td>01/01/2017</td>
-                                                        <td>26/04/2017</td>
-                                                        <td><span class="badge bg-success">Released</span></td>
-                                                        <td>Adminto admin</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Adminto Admin v1.1</td>
-                                                        <td>01/05/2017</td>
-                                                        <td>10/05/2017</td>
-                                                        <td><span class="badge bg-pink">Pending</span></td>
-                                                        <td>Coderthemes</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>4</td>
-                                                        <td>Adminto Frontend v1.1</td>
-                                                        <td>01/01/2017</td>
-                                                        <td>31/05/2017</td>
-                                                        <td><span class="badge bg-purple">Work in Progress</span>
-                                                        </td>
-                                                        <td>Adminto admin</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>5</td>
-                                                        <td>Adminto Admin v1.3</td>
-                                                        <td>01/01/2017</td>
-                                                        <td>31/05/2017</td>
-                                                        <td><span class="badge bg-warning">Coming soon</span></td>
-                                                        <td>Coderthemes</td>
-                                                    </tr>
-    
+                                                    <?php
+                                                        } $conn->close();?>
     
                                                 </tbody>
                                             </table>
