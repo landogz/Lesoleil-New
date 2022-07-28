@@ -29,6 +29,9 @@ $route_dashboard = 'assets/subpage/dashboard/';
 $route_dataentry = 'assets/subpage/dataentry/';
 $route_reports = 'assets/subpage/reports/';
 
+function number($number){
+	return number_format( $number , 2 , '.' , ',' );
+}
 function encrypt($string)
 	{
 		$simple_string = $string;
