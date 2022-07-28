@@ -715,7 +715,8 @@ if (isset($_POST['show_report']))
 
 		    	$query = "UPDATE table_inventory
 							           SET Stock='" . $total_stock . "'  ,
-							           Last_Update='" . date("Y/m/d H:i:s")  . "'
+							           Last_Update='" . date("Y/m/d H:i:s")  . "',
+							           Status='Available'
 							           WHERE ID='" . $_POST["inventory_add_id"] . "'";
 
 			        $results = mysqli_query($conn, $query);
