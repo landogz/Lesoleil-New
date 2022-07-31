@@ -22,7 +22,7 @@
                                     <div class="card-body">
                                         <p class="text-muted font-14 mb-3">
                                             List of items &nbsp;
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg" class="btn btn-success rounded-pill waves-effect waves-light">
+                                            <button type="button" data-bs-toggle="modal" class="btn btn-success rounded-pill waves-effect waves-light add_item">
                                                 <span class="btn-label"><i class="mdi mdi-new-box"></i></span>New Item
                                             </button>
                                         </p>
@@ -77,7 +77,7 @@
 
         
 
-                                        <div class="modal fade" id="inventory_Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal fade" id="inventory_Modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-modal="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -90,34 +90,25 @@
                                                             <label for="simpleinput" class="form-label">Enter Item Name</label>
                                                             <input type="text" name="name" id="name" required class="form-control">
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
+                                                        <div class="mb-3">
                                                                 <label for="simpleinput" class="form-label">Enter Stock</label>
                                                                 <input type="text" name="stock" id="stock" step=1 required class="form-control">
                                                             </div>
-
-
+                                                        <div class="row"> 
                                                             <div class="mb-3 col-md-6">
                                                                 <label for="unit" class="form-label">Select Unit</label>
                                                                 <select class="form-select" name="unit" id="unit">
-                                                                        <option value="kg">Kilogram (kg)</option>
-                                                                        <option value="g">Gram (g)</option>
-                                                                        <option value="l">Liter (l)</option>
-                                                                        <option value="ml">Milliliter (ml)</option>
-                                                                        <option value="btl">Bottle (btl)</option>
-                                                                        <option value="pc">Pieces (pc)</option>
-                                                                        <option value="serving">Serving</option>
-                                                                        <option value="slc">Slices (slc)</option>
+                                                                        <?php echo units();?>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3 col-md-6">
+                                                                <label for="status1" class="form-label">Select Status</label>
+                                                                 <select class="form-select" name="status1" id="status1">
+                                                                        <option value="Available">Available</option>
+                                                                        <option value="Not Available">Not Available</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-3 col-md-12">
-                                                                <label for="status" class="form-label">Select Status</label>
-                                                                <select  class="form-select" name="status" id="status">
-                                                                    <option value="Available">Available</option>
-                                                                    <option value="Not Available">Not Available</option>
-                                                                </select>
-                                                            </div>
                                                         <div class="modal-footer text-center">  
                                                         <input type="hidden" name="inventory_id" id="inventory_id" /> 
                                                             <input type="submit" name="insert_inventory" id="insert_inventory" value="" class="btn btn-success waves-effect waves-light" />  
@@ -130,7 +121,7 @@
                                             </div><!-- /.modal-dialog -->
                                         </div><!-- /.modal -->
 
-                    <div class="modal fade" id="inventory_add_Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal fade" id="inventory_add_Modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-modal="true" >
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -326,7 +317,7 @@ $(document).ready(function() {
                   success: function(data){
                     $('#name').val(data.Item);
                     $('#stock').val(data.Stock);
-                    $('#status').val(data.Status);
+                    $('#status1').val(data.Status);
                     $('#unit').val(data.Unit);
                     $('#inventory_id').val(data.ID);
                     $('#insert_inventory').val("Update");
@@ -373,22 +364,18 @@ $(document).ready(function() {
     });
 
     
+    $(document).on('click', '.add_item', function() {
+                    document.getElementById("stock").disabled = false;
+                    $('#insert_inventory').val("Save");
+                    $('#inventory_id').val("");
+                    $('#submit_inventory')[0].reset();
+                    $('#inventory_Modal').modal('show');
+    }); 
+
 
   $('#submit_inventory').on("submit", function(event) {
         event.preventDefault();
-            swal({
-              title: "",
-              text: "Are you sure you want to save?",
-              type: "warning",
-              showCancelButton: true,
-              confirmButtonClass: "btn-danger",
-              confirmButtonText: "Yes, save it!",
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            },
-            function(){
-
-               $.ajax({
+             $.ajax({
                   url: 'connections/actions.php',
                   type: 'post',
                   data: {
@@ -397,7 +384,7 @@ $(document).ready(function() {
                     'name' : $('#name').val(),
                     'stock' : $('#stock').val(),
                     'unit' : $('#unit').val(),
-                    'status' : $('#status').val(),
+                    'status' : $('#status1').val(),
                   },
                   success: function(response){
                     if ($.trim(response) == 'saved') {  
@@ -407,7 +394,9 @@ $(document).ready(function() {
                                 text: "Data has been saved.",
                                 type: "success"
                             }, function() {                                
-                                location.reload();
+                                 $('#submit_inventory')[0].reset();
+                                $('#inventory_Modal').modal('hide');
+                                $("#content").load("<?php echo $route_dashboard; ?>inventory.php");
                             });
                         }, 1);
                     }
@@ -418,7 +407,9 @@ $(document).ready(function() {
                                 text: "Data has been updated.",
                                 type: "success"
                             }, function() {                                
-                                location.reload();
+                                 $('#submit_inventory')[0].reset();
+                                $('#inventory_Modal').modal('hide');
+                                $("#content").load("<?php echo $route_dashboard; ?>inventory.php");
                             });
                         }, 1);
                     }
@@ -437,12 +428,7 @@ $(document).ready(function() {
                 });
 
 
-            });
-
-
     });
-
-
 
 
 
@@ -467,6 +453,49 @@ $(document).ready(function() {
         $("#datatable_length select[name*='datatable_length']").removeClass("custom-select custom-select-sm"),
         $(".dataTables_length label").addClass("form-label")
 });
+
+
+
+   function delete_inventory(id)
+    {
+
+         swal({
+              title: "Are you sure?",
+              text: "Once deleted, you will not be able to recover this Data!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Yes, delete it!",
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true
+            },
+            function(){
+                $.ajax({
+                  url: 'connections/actions.php',
+                  type: 'post',
+                  data: {
+                    'action_delete_inventory' : 1,
+                    'id' : id,
+                  },
+                  success: function(response){
+                    if ($.trim(response) == 'deleted') {  
+
+                       setTimeout(function() {
+                            swal({
+                                title: "Awesome!",
+                                text: "Data has been deleted.",
+                                type: "success"
+                            }, function() {  
+                                $("#content").load("<?php echo $route_dashboard; ?>inventory.php");
+                            });
+                        }, 1);
+
+
+                    }
+                  }
+                });
+            });
+    }
 
 
 </script>

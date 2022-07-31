@@ -36,10 +36,11 @@ date_default_timezone_set("Asia/Manila");
 // START TABLES FUNCTION
 
 
+		
 		if (isset($_POST['action_delete_account']))
 			{
 			    $id = $_POST['id'];
-			    $query = "UPDATE table_sumbong SET Status=1 WHERE ID = " . $id;
+			    $query = "UPDATE table_account SET Status='deleted' WHERE ID = " . $id;
 			    $results = mysqli_query($conn, $query);
 			    echo 'deleted';
 			    exit();
@@ -90,9 +91,9 @@ date_default_timezone_set("Asia/Manila");
 
 
 
-		if (isset($_POST['action_fetch_account']))
+			if (isset($_POST['action_fetch_account']))
 			{
-			    $query = "SELECT * FROM table_user WHERE Username = '" . $_POST["account_ID"] . "'";
+			    $query = "SELECT * FROM table_account WHERE ID = '" . $_POST["account_ID"] . "'";
 			    $result = mysqli_query($conn, $query);
 			    $row = mysqli_fetch_array($result);
 			    echo json_encode($row);
@@ -134,7 +135,7 @@ date_default_timezone_set("Asia/Manila");
 
 		    if ($id == '')
 		    {
-		        $sql = "SELECT * FROM table_user WHERE `Username`='" . $_POST["Username"] . "'";
+		        $sql = "SELECT * FROM table_account WHERE `Username`='" . $_POST["name"] . "'";
 		        $results = mysqli_query($conn, $sql);
 		        if (mysqli_num_rows($results) > 0)
 		        {
@@ -143,56 +144,27 @@ date_default_timezone_set("Asia/Manila");
 		        }
 		        else
 		        {
-		            $query = "INSERT INTO table_user(Username,Password, Name,Email,Contact,Date_Created)  
-						           VALUES('" . $_POST["Username"] . "', '" . $_POST["password"] . "', '" . $_POST["name"] . "', '" . $_POST["Email"] . "', '" . $_POST["contact"] . "','" . date("Y/m/d H:i:s") . "');  
+		            $query = "  
+						           INSERT INTO table_account(Username, Email, Privilege, Date_Created, Status, Name)  
+						           VALUES('" . $_POST["name"] . "', '" . $_POST["email"] . "', '" . $_POST["priv"] . "', '" . date("Y/m/d H:i:s") . "', '" . $_POST["status"] . "', '" . $_POST["fullname"] . "');  
 						           ";
 
 		            $results = mysqli_query($conn, $query);
-
-
-			        if($_POST["contact"]  != ''){
-		              $sendMessageRequest1 = new SendMessageRequest([
-				            'phoneNumber' => $_POST["contact"],
-				            'message' => 'Magandang araw ' . $_POST["name"]  . ',' . PHP_EOL . ' Binabati kita! Mayroon ka nang account para sa Online Oplan ISumbong Natin HelpDesk System. Mangyaring mag-login sa sumusunod na impormasyon ng account:' . PHP_EOL . 'Username : ' .  $_POST["Username"] . PHP_EOL . 'Password : ' .  $_POST["password"],
-				            'deviceId' => 128912
-				        ]);
-
-				        $sendMessages = $messageClient->sendMessages([
-				            $sendMessageRequest1
-				        ]);
-				    }
-        
-
 		            echo 'saved';
 		            exit();
 		        }
 		    }
 		    else
 		    {
-		    	$query = "UPDATE table_user
-							           SET Username='" . $_POST["username"] . "'  ,
-							           Password='" . $_POST["password"] . "' , 
-							           Name='" . $_POST["name"] . "' , 
+		    	$query = "UPDATE table_account
+							           SET Username='" . $_POST["name"] . "'  ,
 							           Email='" . $_POST["email"] . "' , 
-							           Contact='" . $_POST["contact"] . "' , 
-							           Last_Update='" . date("Y/m/d H:i:s") . "'
+							           Privilege='" . $_POST["priv"] . "' , 
+							           Status='" . $_POST["status"] . "' , 
+							           Name='" . $_POST["fullname"] . "' 
 							           WHERE ID='" . $_POST["account_id"] . "'";
 
 			        $results = mysqli_query($conn, $query);
-
-			        if($_POST["contact"]  != ''){
-			        	 $sendMessageRequest1 = new SendMessageRequest([
-				            'phoneNumber' => $_POST["contact"],
-				            'message' => 'Magandang araw ' . $_POST["name"]  . ',' . PHP_EOL . ' Ang impormasyon ng iyong account para sa Online Oplan ISumbong Natin HelpDesk System ay nagbago. Mangyaring mag-login gamit ang sumusunod na impormasyon ng account:' . PHP_EOL . 'Username : ' .  $_POST["username"] . PHP_EOL . 'Password : ' .  $_POST["password"],
-				            'deviceId' => 128912
-				        ]);
-				        $sendMessages = $messageClient->sendMessages([
-				            $sendMessageRequest1
-				        ]);
-			        }
-			        
-        
-
 			        echo 'updated';
 			        exit();
 
@@ -761,9 +733,35 @@ if (isset($_POST['show_report']))
 			    $row = mysqli_fetch_array($result);
 			    echo json_encode($row);
 			}
+				if (isset($_POST['action_fetch_product_modal']))
+			{
+			    $query = "SELECT table_products.ID, Category, Product, Price, Status,Image
+                              FROM table_products
+                              INNER JOIN table_category ON
+                              table_products.Category_ID = table_category.ID where table_products.ID = " .  $_POST["product_id"]  . " order by ID ASC ";
+			    $result = mysqli_query($conn, $query);
+			    $row = mysqli_fetch_array($result);
+			    echo json_encode($row);
+			    
+			}
 
 		if (isset($_POST['action_fetch_inventory_from_product']))
-			{
+			{?>
+
+<table id="example3" class="table table-bordered table-hover table-sm">
+                                      <thead>
+                                      <tr>
+                                        <th>Item Name</th>
+                                        <th style="width:120px;"></th>
+                                        <th style="width:50px;"></th>
+                                      </tr>
+                                      </thead>
+                                      <tbody>
+
+
+				<?php
+
+
 				$sql = "SELECT * FROM table_inventory where `Status` ='Available'";
                                           $result = $conn->query($sql);
                                           while($row = $result->fetch_assoc()) { ?>
@@ -788,6 +786,14 @@ if (isset($_POST['show_report']))
                                                   <input type="number" class="form-control" name="quanityadd<?php echo $row["ID"]; ?>" id="quanityadd<?php echo $row["ID"]; ?>" value="0">
                                                   <div class="input-group-append">
                                                   <span class="input-group-text"><?php echo $row['Unit'];?></span>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                              </td>
+                                              <td> 
+                                              <div class="form-group">
+                                                <div class="input-group">
+                                                   <div class="input-group-append">
                                                   <button style="width: 100px;" type="button" class="btn btn-primary btn-rounded text-white btn-sm add_ingredients" id="<?php echo $row["ID"]; ?>"><i class="fas fa-plus-circle"></i> Add</button>
                                                 </div>
                                                 </div>
@@ -796,27 +802,36 @@ if (isset($_POST['show_report']))
                                           </tr>
 
 
-
       										<?php	} ?>
 
                                             <?php
                                            
                                               
-                                           }
+                                           } ?>
+
+
+
+                                        
+                                        </tbody>
+                                    </table>
+
+
+                                    <?php
 			}
 
 	if (isset($_POST['action_add_product']))
 		{ 
 
-		    	 $query = " 	INSERT INTO table_products(Category_ID, Product, Price, Status)  
-						        VALUES('" . $_POST["category"] . "', '" . $_POST["name"] . "', '" . $_POST["price"] . "','" . $_POST["status"] . "');";
+		    	 $quer2 = " 	INSERT INTO table_products(Category_ID, Product, Price, Status)  
+						        VALUES(" . $_POST["category"] . ", '" . $_POST["name"] . "', '" . $_POST["price"] . "','" . $_POST["status"] . "');";
 
-			        $results = mysqli_query($conn, $query);
+			        $results = mysqli_query($conn, $quer2);
 
 			        $query = "SELECT * from table_products order by ID DESC LIMIT 1";
 				    $result = mysqli_query($conn, $query);
 				    $row = mysqli_fetch_array($result);
-				    echo json_encode($row);
+				     echo json_encode($row);
+				    // echo $quer2;
 			        exit();
 
 		}
@@ -841,6 +856,10 @@ if (isset($_POST['show_report']))
 			    $id = $_POST['id'];
 			    $query = "DELETE FROM table_products where ID = " . $id;
 			    $results = mysqli_query($conn, $query);
+
+			     $query = "DELETE FROM table_ingredients where Product_ID = " . $id;
+			    $results = mysqli_query($conn, $query);
+			    
 			    echo 'deleted';
 			    exit();
 			}
@@ -858,7 +877,19 @@ if (isset($_POST['show_report']))
 		}
 
 if (isset($_POST['action_fetch_ingredients']))
-			{
+			{?>
+    <table id="example4" class="table table-bordered table-hover table-sm">
+                                                  <thead>
+                                                  <tr>
+                                                    <th>Item Name</th>
+                                                    <th style="width:120px;"></th>
+                                                    <th style="width:206px;"></th>
+                                                  </tr>
+                                                  </thead>
+                                                  <tbody >
+                                                    
+
+				<?php
 				$sql = "SELECT *,table_ingredients.ID as `Ingredients ID`,Item,Quantity,Unit from table_ingredients
 						inner join table_products on
 						table_ingredients.Product_ID = table_products.ID
@@ -877,7 +908,15 @@ if (isset($_POST['action_fetch_ingredients']))
                                                 <div class="input-group">
                                                   <input type="number" class="form-control" name="quanityupdate<?php echo $row["Ingredients ID"]; ?>" id="quanityupdate<?php echo $row["Ingredients ID"]; ?>" value="<?php echo ($row["Quantity"]); ?>">
                                                   <div class="input-group-append">
-                                                  <span class="input-group-text"><?php echo $row['Unit'];?></span>
+                                                  <span class="input-group-text"><?php echo $row['Unit'];?></span>                                                 
+                                                </div>
+                                                </div>
+                                              </div>
+                                              </td>
+                                              <td> 
+                                              <div class="form-group">
+                                                <div class="input-group">                                                 
+                                                  <div class="input-group-append">
                                                   <button style="width: 100px;" type="button" class="btn btn-warning btn-rounded text-white btn-sm update_ingredients" id="<?php echo $row["Ingredients ID"]; ?>"><i class="fas fa-save"></i></button>
                                                   <button style="width: 100px;" type="button" class="btn btn-danger btn-rounded text-white btn-sm" id="<?php echo $row["Ingredients ID"]; ?>" onclick="delete_ingredients(<?php echo $row["Ingredients ID"]; ?>)"><i class="fas fa-trash"></i></button>
                                                 </div>
@@ -889,7 +928,11 @@ if (isset($_POST['action_fetch_ingredients']))
                                             <?php
                                            
                                               
-                                           }
+                                           } ?>
+
+                                                    </tbody>
+                                                </table>
+                                                <?php
 			}
 
 
@@ -900,6 +943,13 @@ if (isset($_POST['action_fetch_ingredients']))
 			    $results = mysqli_query($conn, $query);
 			    echo 'deleted';
 			    exit();
+			}
+
+				if (isset($_POST['set_product_session']))
+			{
+			    $id = $_POST['id'];
+				$_SESSION['product_id']=$id;
+				echo $_SESSION['product_id'];
 			}
 
 

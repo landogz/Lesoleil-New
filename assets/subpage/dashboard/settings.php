@@ -137,7 +137,58 @@
 
 
 <script type="text/javascript">
-  
+    $(function () {
+      $(document).on('click', '.save', function() {
+        swal({
+              title: "",
+              text: "Are you sure you want to update?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Yes, update it!",
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true
+            },
+            function(){
+
+               $.ajax({
+                  url: 'connections/actions.php',
+                  type: 'post',
+                  data: {
+                    'action_save_settings' : 1,
+                    'storename' : $('#storename').val(),
+                    'address' : $('#address').val(),
+                    'tin' : $('#tin').val(),
+                    'zip' : $('#zip').val(),
+                    'email' : $('#email').val(),
+                    'systemname' : $('#systemname').val(),
+                    'pos' : $('#pos').val(),
+                    'charge' : $('#charge').val(),
+                    'senior' : $('#senior').val(),
+                    'pwd' : $('#pwd').val(),
+                    'Website' : $('#Website').val(),
+                  },
+                  success: function(response){
+                    if ($.trim(response) == 'saved') {  
+                       setTimeout(function() {
+                            swal({
+                                title: "Awesome!",
+                                text: "Data has been updated.",
+                                type: "success"
+                            }, function() {        
+                                               $("#content").load("<?php echo $route_dashboard; ?>settings.php");
+                            });
+                        }, 1);
+                    }
+                  }
+                });
+
+
+            });
+    }); 
+
+  })
+
     var val = "<?php echo $System_Name ?>";
  newPageTitle =  val +' - Settings';
 document.querySelector('title').textContent = newPageTitle;

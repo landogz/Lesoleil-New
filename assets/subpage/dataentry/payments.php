@@ -23,7 +23,7 @@
                                     <div class="card-body">
                                         <p class="text-muted font-14 mb-3">
                                             Mode of Payments &nbsp;
-                                            <button type="button" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg" class="btn btn-success rounded-pill waves-effect waves-light">
+                                            <button type="button" data-bs-toggle="modal" class="btn btn-success rounded-pill waves-effect waves-light add_mop">
                                                 <span class="btn-label"><i class="mdi mdi-new-box"></i></span>New Payment Method
                                             </button>
                                         </p>
@@ -40,26 +40,21 @@
     
     
                                             <tbody>
+                                            <?php 
+                                              $sql = "SELECT * FROM table_MOP";
+                                              $result = $conn->query($sql);
+                                              while($row = $result->fetch_assoc()) { ?>
                                             <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td>0 Bottle (btl)</td>
-                                                <td><span class="badge bg-success">AVAILABLE</span></td>
-                                                <td>
-
-                                                    <div class="dropdown text-center">
-                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="true">
-                                                            <i class="mdi mdi-dots-vertical"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu dropdown-menu-end" data-popper-placement="bottom-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 11px);">
-                                                            <!-- item-->
-                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                            <!-- item-->
-                                                            <a href="javascript:void(0);" class="dropdown-item">Delete</a>
-                                                        </div>
-                                                    </div>
-
+                                                <td><?php echo  htmlentities($row["ID"]); ?></td>
+                                                <td><?php echo  htmlentities($row["MOP"]); ?></td>
+                                                <td><?php if($row["Status"] == 'Available'){ echo '<span class="badge bg-success">Available</span>'; } else { echo '<span class="badge bg-danger">Not Available</span>'; } ?></td>
+                                                <td class="project-actions text-right">
+                                                  <button type="button" class="btn btn-warning btn-rounded text-white btn-sm edit_MOP" id="<?php echo $row["ID"]; ?>"><i class="fas fa-edit"></i> Edit</button>
+                                                  <button type="button" class="btn btn-danger btn-rounded text-white btn-sm" onclick="delete_MOP(<?php echo $row["ID"]; ?>)"><i class="fas fa-trash-alt"></i> Delete</button>
                                                 </td>
                                             </tr>
+                                               <?php
+                                                  } $conn->close();?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -72,102 +67,39 @@
                 </div> <!-- content -->
 
 
-
-
  <!--  Modal content for the Large example -->
-                                        <div class="modal fade" id="bs-example-modal-lg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-xl">
+                                        <div class="modal fade" id="MOP_Modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-modal="true">
+                                            <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title" id="myLargeModalLabel">Inspect New Complaint</h4>
+                                                        <h4 class="modal-title" id="myLargeModalLabel">Mode of Payments</h4>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
 
-                                                      <div class="card-body" id="details_place">
-                                                                    <h5 class="card-title placeholder-glow">
-                                                                        <span class="placeholder col-6"></span>
-                                                                    </h5>
-                                                                    <p class="card-text placeholder-glow">
-                                                                        <span class="placeholder col-7"></span>
-                                                                        <span class="placeholder col-4"></span>
-                                                                        <span class="placeholder col-4"></span>
-                                                                        <span class="placeholder col-6"></span>
-                                                                        <span class="placeholder col-8"></span>
-                                                                    </p>
-                                                                </div>
+                                                    <div class="modal-body">
+                                                        <form method="post" id="submit_MOP" class="form-material">
+                                                           <div class="mb-3">
+                                                                <label for="name">Enter Mode of Payment Name</label>
+                                                                 <input type="text" name="name" id="name" required class="form-control form-control-line" />  
+                                                            </div>
 
-                                                    <div class="modal-body"  id="details_card" style="display: none">
+                                                            <div class="row"> 
+                                                            <div class="mb-3 col-md-12">
+                                                                <label for="status1" class="form-label">Select Status</label>
+                                                                 <select class="form-select" name="status1" id="status1">
+                                                                        <option value="Available">Available</option>
+                                                                        <option value="Not Available">Not Available</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                           <div class="modal-footer">  
+                                                                <input type="hidden" name="MOP_id" id="MOP_id" /> 
+                                                              <input type="submit" name="insert_MOP" id="insert_MOP" value="" class="btn btn-success" />  
+                                                             <button type="button" class="btn btn-white" data-bs-dismiss="modal" aria-label="Close" >Close</button>
+                                                           </div>
+                                                        </form>
+                                                     </div>
 
-                                                            <div class="card-body">
-
-                                                                <form id="show_com" method="POST" enctype="multipart/form-data">
-
-                                                                    <div class="card">
-                                                                        <div class="card-body task-detail">
-                                                                            
-                                                                            <div class="d-flex mb-3">
-                                                                                <img class="flex-shrink-0 me-3 rounded-circle avatar-md" alt="64x64" src="assets/images/users/avatars-000317336432-0vcza7-t500x500.jpg">
-                                                                                <div class="flex-grow-1">
-                                                                                    <h4 class="media-heading mt-0" id="showname"></h4>
-                                                                                    <span class="badge bg-danger" id="showreference"></span>
-                                                                                </div>
-                                                                            </div>
-                                        
-                                                                            <h4 name="showsubject" id="showsubject"></h4>
-                                        
-                                                                            <p class="text-muted" id="showmessage"></p>
-                                        
-                                                                            
-                                        
-                                                                            <div class="row task-dates mb-0 mt-2">
-                                                                                <div class="col-lg-4">
-                                                                                    <h5 class="font-600 m-b-5">Contact</h5>
-                                                                                    <p id="showcontact"></p>
-                                                                                </div>
-                                        
-                                                                                
-                                                                                <div class="col-lg-4">
-                                                                                    <h5 class="font-600 m-b-5">Email Address</h5>
-                                                                                    <p id="showemail"></p>
-                                                                                </div><div class="col-lg-4">
-                                                                                    <h5 class="font-600 m-b-5">Date Reported</h5>
-                                                                                    <p id="date_reported"></p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="clearfix"></div>
-                                        
-
-                                        
-                                                                            <div class="attached-files mt-3">
-                                                                                <h5>Attached File</h5>
-                                                                                <ul class="list-inline files-list">
-                                                                                    <li class="list-inline-item file-box">
-                                                                                         <img class="img-fluid z-depth-1" src="" alt="video" id="evidence_img" style="display: none;height: 250px">
-                                                                                          <video id="evidence_video"  width="400" controls style="width: 100%;height: 250px;display: none;">
-                                                                                            <source  id="evidence_video" src="">
-                                                                                            Your browser does not support HTML video.
-                                                                                            </video>
-                                                                                    </li>
-                                                                                    
-                                                                                </ul>
-                                                                                
-                                                                            </div>
-                                        
-                                                                        </div>
-                                                                    </div>
-                                                           
-                                                    </div>
-                                                    <div class="modal-footer"> 
-                                                        <button type="button" class="btn btn-success waves-effect waves-light" onclick="approved_account()">
-                                                       Approve
-                                                    </button>
-                                                    <button type="button" class="btn btn-danger waves-effect waves-light"  onclick="declined_account()">
-                                                        Decline
-                                                    </button>
-                                                        <button type="button" class="btn btn-white" data-bs-dismiss="modal" aria-label="Close" >Close</button>
-                                                    </div>
-                                                    </form>
-                                                </div><!-- /.modal-content -->
                                             </div><!-- /.modal-dialog -->
                                         </div><!-- /.modal -->
 
@@ -179,6 +111,98 @@
 <script type="text/javascript">
     
 $(document).ready(function() {
+
+
+      $(document).on('click', '.edit_MOP', function() {
+        var MOP_ID = $(this).attr("id");
+        $.ajax({
+                  url: 'connections/actions.php',
+                  type: 'post',
+                  data: {
+                    'action_fetch_MOP' : 1,
+                    'MOP_ID' : MOP_ID,
+                  },
+                    dataType: 'json',
+                  success: function(data){
+                    $('#name').val(data.MOP);
+                    $('#status1').val(data.Status);
+                    $('#MOP_id').val(data.ID);
+                    $('#insert_MOP').val("Update");
+                    $('#MOP_Modal').modal('show');
+                  }
+                });
+
+    }); 
+
+
+   $(document).on('click', '.add_mop', function() {
+                    $('#insert_MOP').val("Save");
+                    $('#MOP_id').val("");
+                    $('#submit_MOP')[0].reset();
+                    $('#MOP_Modal').modal('show');
+    }); 
+
+  $('#submit_MOP').on("submit", function(event) {
+        event.preventDefault();
+            
+               $.ajax({
+                  url: 'connections/actions.php',
+                  type: 'post',
+                  data: {
+                    'action_add_MOP' : 1,
+                    'MOP_id' : $('#MOP_id').val(),
+                    'name' : $('#name').val(),
+                    'status' : $('#status1').val(),
+                  },
+                  success: function(response){
+                    if ($.trim(response) == 'saved') {  
+                       setTimeout(function() {
+                            swal({
+                                title: "Awesome!",
+                                text: "Data has been saved.",
+                                type: "success"
+                            }, function() {                     
+                                $("#content").load("<?php echo $route_dataentry; ?>payments.php");
+                                $('#insert_MOP').val("Save");
+                                $('#MOP_id').val("");
+                                $('#submit_MOP')[0].reset();
+                                $('#MOP_Modal').modal('hide');
+                            });
+                        }, 1);
+                    }
+                    else if ($.trim(response) == 'updated') {  
+                       setTimeout(function() {
+                            swal({
+                                title: "Awesome!",
+                                text: "Data has been updated.",
+                                type: "success"
+                            }, function() {                                
+                                $('#submit_MOP')[0].reset();
+                                $('#MOP_Modal').modal('hide');
+                                $("#content").load("<?php echo $route_dataentry; ?>payments.php");
+                                $('#insert_MOP').val("Save");
+                                $('#MOP_id').val("");
+                            });
+                        }, 1);
+                    }
+                    else if ($.trim(response) == 'duplicate')
+                    {
+                         setTimeout(function() {
+                            swal({
+                                title: "Duplicate!",
+                                text: "Table Name already exist!",
+                                type: "error"
+                            }, function() {              
+                            });
+                        }, 1);
+                    }
+                  }
+                });
+
+
+    });
+
+
     $("#datatable").DataTable();
 
     var a = $("#datatable-buttons").DataTable({
@@ -201,6 +225,46 @@ $(document).ready(function() {
         $(".dataTables_length label").addClass("form-label")
 });
 
+     function delete_MOP(id)
+    {
+
+         swal({
+              title: "Are you sure?",
+              text: "Once deleted, you will not be able to recover this Data!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Yes, delete it!",
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true
+            },
+            function(){
+                $.ajax({
+                  url: 'connections/actions.php',
+                  type: 'post',
+                  data: {
+                    'action_delete_MOP' : 1,
+                    'id' : id,
+                  },
+                  success: function(response){
+                    if ($.trim(response) == 'deleted') {  
+
+                       setTimeout(function() {
+                            swal({
+                                title: "Awesome!",
+                                text: "Data has been deleted.",
+                                type: "success"
+                            }, function() {                                
+                                $("#content").load("<?php echo $route_dataentry; ?>payments.php");
+                            });
+                        }, 1);
+
+
+                    }
+                  }
+                });
+            });
+    }
 
 </script>
 

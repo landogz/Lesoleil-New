@@ -32,6 +32,18 @@ $route_reports = 'assets/subpage/reports/';
 function number($number){
 	return number_format( $number , 2 , '.' , ',' );
 }
+
+function units(){?>
+<option value="kg">Kilogram (kg)</option>
+<option value="g">Gram (g)</option>
+<option value="l">Liter (l)</option>
+<option value="ml">Milliliter (ml)</option>
+<option value="btl">Bottle (btl)</option>
+<option value="pc">Pieces (pc)</option>
+<option value="serving">Serving</option>
+<option value="slc">Slices (slc)</option>
+<?php }
+
 function encrypt($string)
 	{
 		$simple_string = $string;

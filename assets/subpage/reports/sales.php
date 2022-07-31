@@ -81,7 +81,7 @@ $(document).ready(function() {
     $("#datatable").DataTable();
 
     var a = $("#datatable-buttons").DataTable({
-        ordering:false,
+        order: [[0, 'desc']],
         buttons: ["copy", "excel", "pdf"]
     });
 

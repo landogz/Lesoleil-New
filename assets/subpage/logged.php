@@ -52,10 +52,10 @@
                                 </div>
     
                                 <!-- item-->
-                                <a href="#" class="dropdown-item notify-item" data-bs-toggle="modal" data-bs-target="#editprofile">
+                             <!--    <a href="#" class="dropdown-item notify-item" data-bs-toggle="modal" data-bs-target="#editprofile">
                                     <i class="fe-user"></i>
                                     <span>Edit Profile</span>
-                                </a>
+                                </a> -->
     
                                 <div class="dropdown-divider"></div>
     
