@@ -24,8 +24,9 @@
          <?php include 'assets/subpage/logged.php'; ?>
          <div class="content-page">
             <div class="content" id="content">
-               <?php include 'assets/subpage/footer.php'; ?> 
+               
             </div>
+            <?php include 'assets/subpage/footer.php'; ?> 
          </div>
       </div>
       <div class="rightbar-overlay"></div>
